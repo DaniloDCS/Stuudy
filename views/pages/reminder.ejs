@@ -1,0 +1,50 @@
+<div class="row">
+  <h1>Reminder - CREATE</h1>
+  <form action="/reminder/create" method="post">
+		<div class="form-floating mt-1">
+      <input type="text" class="form-control" id="id" name="id" placeholder="id" value="uuid()" disabled>
+      <label class="form-label" for="id">Id</label>
+    </div>
+		<div class="form-floating mt-1">
+      <input type="datetime-local" class="form-control" id="createdAt" name="createdAt" placeholder="createdAt" value="new Date()" disabled>
+      <label class="form-label" for="createdAt">CreatedAt</label>
+    </div>
+		<div class="form-floating mt-1">
+      <input type="datetime-local" class="form-control" id="updatedAt" name="updatedAt" placeholder="updatedAt" value="new Date()" disabled>
+      <label class="form-label" for="updatedAt">UpdatedAt</label>
+    </div>
+		<div class="form-floating mt-1">
+      <input type="text" class="form-control" id="title" name="title" placeholder="title" value="" required>
+      <label class="form-label" for="title">Title</label>
+    </div>
+		<div class="form-floating mt-1">
+      <input type="text" class="form-control" id="content" name="content" placeholder="content" value="" required>
+      <label class="form-label" for="content">Content</label>
+    </div>
+		<div class="form-floating mt-1">
+      <input type="date" class="form-control" id="dateStarted" name="dateStarted" placeholder="dateStarted" value="new Date()" required>
+      <label class="form-label" for="dateStarted">DateStarted</label>
+    </div>
+		<div class="form-floating mt-1">
+      <input type="date" class="form-control" id="dateFinished" name="dateFinished" placeholder="dateFinished" value="new Date()" required>
+      <label class="form-label" for="dateFinished">DateFinished</label>
+    </div>
+		<div class="form-floating mt-1">
+      <input type="text" class="form-control" id="status" name="status" placeholder="status" value="Pending" >
+      <label class="form-label" for="status">Status</label>
+    </div>
+    <div class="form-group mt-2">
+      <button type="submit" class="btn btn-success"> <i class="fas fa-check-circle"></i> Submit</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const inputs = document.querySelectorAll('input');
+
+  inputs.forEach(input => {
+    if (input.type === 'datetime-local') input.value = new Date().toISOString().slice(0, 16);
+    if (input.type === 'time') input.value = new Date().toISOString().slice(11, 16);
+    if (input.type === 'date') input.value = new Date().toISOString().slice(0, 10);
+  });
+</script>

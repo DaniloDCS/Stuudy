@@ -1,0 +1,392 @@
+<h4>
+  Tests
+  <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modal-classes-test">
+    <i class="fas fa-plus-circle"></i> Register new Test
+  </button>
+</h4>
+<table class="table table-sm table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Title</th>
+      <th scope="col" style="width: 12%;">Status of Correction</th>
+      <th scope="col">Note</th>
+      <th scope="col">Link</th>
+      <th scope="col">Date</th>
+      <th scope="col"><i class="fas fa-cog"></i></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for (let Test of discipline.tests ) { %>
+    <tr>
+      <td><%= Test.title %></td>
+      <td>
+        <span class="badge rounded-pill <%= Test.statusOfCorrection === 'Concluded' ? 'bg-success': 'bg-warning' %>">
+          <i class="fas fa-<%= Test.statusOfCorrection === 'Concluded' ? 'check': 'exclamation' %>"></i>
+          <%= Test.statusOfCorrection %>
+        </span>
+      </td>
+      <td>
+        <% if (Test.statusOfCorrection === 'Waiting'){ %>
+          <span class="badge rounded-pill bg-warning">
+            <i class="fas fa-exclamation"></i>
+            <%= Test.noteObtained %>/<%= Test.noteTotal %>
+          </span>
+        <% } else { %>
+          <span class="badge rounded-pill <%= Number(Test.noteObtained) <= 6.9 ? 'bg-danger' : Number(Test.noteObtained) >= 7 && Number(Test.noteObtained) <= 8.5 ? 'bg-primary' : 'bg-success' %>">
+            <i class="fas fa-<%= Number(Test.noteObtained) <= 6.9 ? 'times' : 'check-double' %>"></i>
+            <%= Test.noteObtained %>/<%= Test.noteTotal %>
+          </span>
+        <% } %>
+      </td>
+      <td><i class="fas fa-link"></i> <a href="<%= Test.link %>"><%= Test.link %></a> </td>
+      <td>
+        <%= new Date(Test.date).toLocaleDateString("en-us", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-test-<%= Test.id %>">
+          <i class="fas fa-pen"></i>
+        </button>
+        <div class="modal fade" id="modal-test-<%= Test.id %>" tabindex="-1" role="dialog"
+          aria-labelledby="modal-test-<%= Test.id %>-label" aria-hidden="true">
+          <div class="modal-dialog modal-xl" role="document">
+            <form class="modal-content" action="/discipline/test/<%= Test.id %>/edit"
+              method="post">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-test-<%= Test.id %>-label">Editing: <%= Test.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="title" name="title" placeholder="title" value="<%= Test.title %>" required>
+                  <label class="form-label" for="title">Title</label>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="number" class="form-control" id="noteTotal-edit-test" name="noteTotal" placeholder="noteTotal" value="<%= Test.noteTotal %>" readonly required>
+                      <label class="form-label" for="noteTotal">Note Total</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="number" class="form-control" id="noteObtained" name="noteObtained" placeholder="noteObtained" value="<%= Test.noteObtained %>" readonly required>
+                      <label class="form-label" for="noteObtained">Note Obtained</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="date" class="form-control" id="date" name="date" placeholder="date" value="<%= Test.date %>" required>
+                      <label class="form-label" for="date">Date</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="text" class="form-control" id="link" name="link" placeholder="link" value="<%= Test.link %>">
+                      <label class="form-label" for="link">Link</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group mt-3">
+                  <hr>
+                  <h5> Questions</h5>
+                  <div id="edit-test-questions-<%= Test.id %>" class="mt-2 mb-2">
+                    <% for (let question of Test.questions) { %>
+                    <div class="row mt-3 mb-3" id="questions-edit-<%= Test.id %>">
+                      <div class="col-11">
+                        <div class="form-floating mt-1">
+                          <input type="text" class="form-control"
+                            id="question-<%= Test.questions.indexOf(question) + 1 %>-title"
+                            name="questions[question-<%= Test.questions.indexOf(question) + 1 %>][title]"
+                            placeholder="question" value="<%= question.title %>" required>
+                          <label class="form-label"
+                            for="question-<%= Test.questions.indexOf(question) + 1 %>-title">Question
+                            <%= Test.questions.indexOf(question) + 1 %></label>
+                        </div>
+                        <div class="form-floating mt-1">
+                          <input type="text" class="form-control"
+                            id="question-<%= Test.questions.indexOf(question) + 1 %>-response"
+                            name="questions[question-<%= Test.questions.indexOf(question) + 1 %>][content]"
+                            placeholder="question" value="<%= question.content %>" required>
+                          <label class="form-label"
+                            for="question-<%= Test.questions.indexOf(question) + 1 %>-response">Response</label>
+                        </div>
+                        <div class="form-floating mt-1">
+                          <input type="text" class="form-control"
+                            id="question-<%= Test.questions.indexOf(question) + 1 %>-value"
+                            name="questions[question-<%= Test.questions.indexOf(question) + 1 %>][value]"
+                            placeholder="question" value="<%= question.value %>" required>
+                          <label class="form-label"
+                            for="question-<%= Test.questions.indexOf(question) + 1 %>-value">Value</label>
+                        </div>
+                      </div>
+                      <div class="col-1 d-flex flex-column align-content-center justify-content-center">
+                        <button type="button" class="btn btn-danger"
+                          onclick="newCommentRemove('questions-edit-<%= Test.id %>')"> <i
+                            class="fas fa-times-circle"></i></button>
+                      </div>
+                    </div>
+                    <% } %>
+                  </div>
+                  <div class="row justify-content-center">
+                    <button type="button" onclick="newQuestionWithValueAdd('edit-test-questions-<%= Test.id %>', 'noteTotal-edit-test')"
+                      class="btn btn-primary w-50"><i class="fas fa-plus-circle"></i> Add new Question</button>
+                  </div>
+                </div>
+                <div class="form-group mt-3">
+                  <hr>
+                  <h5> Comments</h5>
+                  <div id="edit-test-comments-<%= Test.id %>" class="mt-2 mb-2">
+                    <% for (let comment of Test.comments) { %>
+                    <div class="form-floating mt-1">
+                      <input type="text" class="form-control" id="comment" name="comment" readonly placeholder="comment"
+                        value="<%= comment.content %>" required>
+                      <label class="form-label" for="comment">Comment
+                        <%=  Test.comments.indexOf(comment) + 1 %></label>
+                    </div>
+                    <% } %>
+                  </div>
+                  <div class="row justify-content-center">
+                    <button type="button" onclick="newCommentAdd('edit-test-comments-<%= Test.id %>')"
+                      class="btn btn-secondary w-50"><i class="fas fa-plus-circle"></i> Add new comment</button>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Cancel</button>
+                <button type="submit" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal-test-<%= Test.id %>-delete">
+          <i class="fas fa-trash"></i>
+        </button>
+        <div class="modal fade" id="modal-test-<%= Test.id %>-delete" tabindex="-1" role="dialog" aria-labelledby="modal-test-<%= Test.id %>-delete-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-test-<%= Test.id %>-delete-label">Test: <%= Test.title %>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete this test?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Cancel</button>
+                <a href="/discipline/test/<%= Test.id %>/delete" type="button" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-test-<%= Test.id %>-questions">
+          <i class="fas fa-list-check"></i>
+        </button>
+        <div class="modal fade" id="modal-test-<%= Test.id %>-questions" tabindex="-1" role="dialog" aria-labelledby="modal-test-<%= Test.id %>-questions-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-test-<%= Test.id %>-questions-label">Test:
+                  <%= Test.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                <% for (let question of Test.questions) { %>
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="question" name="question" readonly placeholder="question" value="<%= question.content %>" required>
+                  <label class="form-label" for="question"><%= question.title %></label>
+                  <% if (Test.statusOfCorrection === 'Waiting'){ %>
+                  <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
+                    <i class="fas fa-exclamation"></i>
+                  </span>
+                  <% } else { %>
+                  <span
+                    class="position-absolute top-0 start-0 translate-middle badge rounded-pill <%= question.correct ? 'bg-success' : 'bg-danger' %>">
+                    <%= question.noteObtained %>
+                  </span>
+                  <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill <%= question.correct ? 'bg-success' : 'bg-danger' %> ">
+                    <i class="fas fa-<%= question.correct ? 'check-double' : 'times' %>"></i>
+                  </span>
+                  <% } %>
+                </div>
+                <% } %>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-test-<%= Test.id %>-comments">
+          <i class="fas fa-comments"></i>
+        </button>
+        <div class="modal fade" id="modal-test-<%= Test.id %>-comments" tabindex="-1" role="dialog" aria-labelledby="modal-test-<%= Test.id %>-comments-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-test-<%= Test.id %>-comments-label">Test:
+                  <%= Test.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                <% if (Test.comments.length === 0){ %>
+                <p class="text-center alert alert-secondary"> <i class="fas fa-info-circle"></i> No comments</p>
+                <% } %>
+                <% for (let comment of Test.comments) { %>
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="comment" name="comment" readonly placeholder="comment"
+                    value="<%= comment.content %>" required>
+                  <label class="form-label" for="comment">Comment <%=  Test.comments.indexOf(comment) + 1 %></label>
+                </div>
+                <% } %>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#modal-test-<%= Test.id %>-concluded">
+          <i class="fas fa-check-double"></i>
+        </button>
+        <div class="modal fade" id="modal-test-<%= Test.id %>-concluded" tabindex="-1" role="dialog" aria-labelledby="modal-test-<%= Test.id %>-concluded-label" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <form class="modal-content" action="/discipline/test/<%= Test.id %>/correction" method="post">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-test-<%= Test.id %>-concluded-label">Test:
+                  <%= Test.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                <% if (Test.questions.length === 0){ %>
+                <p class="text-center alert alert-secondary"> <i class="fas fa-info-circle"></i> No questions</p>
+                <% } %>
+                <% for (let question of Test.questions) { %>
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="question-name" readonly placeholder="question"
+                    value="<%= question.content %>">
+                  <label class="form-label" for="question-name">Question <%=  Test.questions.indexOf(question) + 1 %></label>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="text" class="form-control" id="question-value" readonly placeholder="question" value="<%= question.value %>">
+                      <label class="form-label" for="question">Value total</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input min="0" max="<%= question.value %>" step="0.5" type="number" class="form-control" <%= question.correct ? '' : 'readonly' %> id="question-value-obtained-<%= question.id %>" placeholder="question" value="<%= question.noteObtained %>" name="questions[question-<%= Test.questions.indexOf(question) + 1 %>][valueObtained]" required>
+                      <label class="form-label" for="question">Value obtained </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group mt-2 ml-1">
+                  <label class="form-label">
+                    This Question is correct?
+                    <input type="checkbox" onclick="correct('question-value-obtained-<%= question.id %>')" class="form-check-input" id="question-<%= Test.questions.indexOf(question) + 1 %>-answer" name="questions[question-<%= Test.questions.indexOf(question) + 1 %>][correct]" <%= question.correct ? 'checked' : '' %>>
+                  </label>
+                </div>
+                <% } %>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Close</button>
+                <button type="submit" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>
+
+<!-- Test -->
+<div class="modal fade" id="modal-classes-test" tabindex="-1" aria-labelledby="modal-classes-testLabel"
+  aria-hidden="true">
+  <form class="modal-dialog modal-xl" action="/discipline/test/register" method="post">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-classes-testLabel">Register a new Test</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating mt-1">
+          <input type="text" class="form-control" id="title" name="title" placeholder="title" value="" required>
+          <label class="form-label" for="title">Title</label>
+        </div>
+         <div class="row">
+           <div class="col">
+             <div class="form-floating mt-1">
+               <input type="text" class="form-control" id="link" name="link" placeholder="link" value="/">
+               <label class="form-label" for="link">Link</label>
+             </div>
+           </div>
+           <div class="col">
+             <div class="form-floating mt-1">
+               <input type="date" class="form-control" id="date" name="date" placeholder="date" value="new Date()" required>
+               <label class="form-label" for="date">Date</label>
+             </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="form-floating mt-1">
+              <input type="number" class="form-control" id="noteTotal-new-test" name="noteTotal" placeholder="noteTotal" step="0.5" max="10" min="0" value="0" readonly required>
+              <label class="form-label" for="noteTotal">Note Total</label>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-floating mt-1">
+              <input type="number" class="form-control" id="noteObtained" name="noteObtained" placeholder="noteObtained" step="0.5" max="10" min="0" value="0" readonly required>
+              <label class="form-label" for="noteObtained">Note Obtained</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group mt-3">
+          <hr>
+          <h5> Questions</h5>
+          <div id="new-test-questions" class="mt-2 mb-2"></div>
+          <div class="row justify-content-center">
+            <button id="newQuestionWithValueAddBtn" type="button" onclick="newQuestionWithValueAdd('new-test-questions')" class="btn btn-primary w-50"><i class="fas fa-plus-circle"></i> Add new Question</button>
+          </div>
+        </div>
+        <div class="form-group mt-3">
+          <hr>
+          <h5> Comments</h5>
+          <div id="new-test-comments" class="mt-2 mb-2"></div>
+          <div class="row justify-content-center">
+            <button type="button" onclick="newCommentAdd('new-test-comments')" class="btn btn-secondary w-50"><i class="fas fa-plus-circle"></i> Add new comment</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i>
+          Cancel</button>
+        <button type="submit" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<script>
+  function correct(id) {
+    let value = document.getElementById(id);
+    value.readOnly = !value.readOnly;
+
+    if (value.readOnly === false) {
+      value.value = 1;
+      value.setAttribute('min', 1);
+      value.focus();
+    } else {
+      value.value = 0;
+      value.setAttribute('min', 0);
+    }
+  }
+</script>

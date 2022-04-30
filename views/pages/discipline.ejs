@@ -1,0 +1,318 @@
+<div class="row p-3">
+  <div class="col">
+    <h5>
+      <a href="/course/<%= course %>" class="btn btn-lg btn-primary"><i class="fas fa-arrow-left"></i></a>
+      Discipline: <%= discipline.title %>
+      -
+      <% if (discipline.status === 'Studying') { %>
+      <span class="badge rounded-pill bg-primary">
+        <i class="fas fa-hourglass"></i>
+        <%= discipline.status %>
+      </span>
+      <span class="badge rounded-pill bg-secondary">
+        <i class="fas fa-business-time"></i>
+        <%= discipline.workloadProgress %>%
+      </span>
+      <% } else if (discipline.status === 'Finished') { %>
+      <span class="badge rounded-pill bg-success">
+        <i class="fas fa-check-circle"></i>
+        <%= discipline.status %>
+      </span>
+      <span class="badge rounded-pill bg-secondary">
+        <i class="fas fa-business-time"></i>
+        <%= discipline.workloadCompleted %> %
+      </span>
+      <% } else if (discipline.status === 'Closed') { %>
+      <span class="badge rounded-pill bg-danger">
+        <i class="fas fa-times-circle"></i>
+        <%= discipline.status %>
+      </span>
+      <% } else if (discipline.status === 'Waiting') { %>
+      <span class="badge rounded-pill bg-warning">
+        <i class="fas fa-user-clock"></i>
+        <%= discipline.status %>
+      </span>
+      <% } %>
+    </h5>
+    <h6>Teacher: <%= discipline.teacher%> </h6>
+    <div class="mt-2 mb-2">
+      <% if (discipline.status === 'Studying') { %>
+        <button class="btn btn-success btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modal-finish-period-<%= discipline.id %>"><i class="fas fa-check-circle"></i> Finish this discipline</button>
+      <% } else if (discipline.status === 'Finished') { %>
+        <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modal-new-discipline-<%= discipline.id %>"><i class="fas fa-plus-circle"></i> Reopen this Discipline</button>
+      <% } %>
+      <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modal-discipline-edit"><i class="fas fa-pen"></i> Edit this discipline</button>
+      <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modal-discipline-delete"><i class="fas fa-trash"></i> Delete this discipline</button>
+    </div>
+    <div class="mt-5 pl-5 pr-5">
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
+            type="button" role="tab" aria-controls="nav-home" aria-selected="true">Classes</button>
+          <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button"
+            role="tab" aria-controls="nav-profile" aria-selected="false">Bulletins</button>
+          <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button"
+            role="tab" aria-controls="nav-contact" aria-selected="false">Activities</button>
+          <button class="nav-link" id="nav-contact-tab-2" data-bs-toggle="tab" data-bs-target="#nav-contact-2"
+            type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Tests</button>
+          <button class="nav-link" id="nav-contact-tab-3" data-bs-toggle="tab" data-bs-target="#nav-contact-3"
+            type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Workers</button>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div class="p-3 tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+          <%- include('./class') %>
+        </div>
+        <div class="p-3 tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+          <%- include('./bulletins') %>
+        </div>
+        <div class="p-3 tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+          <%- include('./activity') %>
+        </div>
+        <div class="p-3 tab-pane fade" id="nav-contact-2" role="tabpanel" aria-labelledby="nav-contact-tab-2">
+          <%- include('./test') %>
+        </div>
+        <div class="p-3 tab-pane fade" id="nav-contact-3" role="tabpanel" aria-labelledby="nav-contact-tab-3">
+          <%- include('./work') %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Discipline edit -->
+<div class="modal fade" id="modal-discipline-edit" tabindex="-1" aria-labelledby="modal-discipline-editLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form class="modal-content" action="/discipline/<%= discipline.id %>/edit" method="post">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-discipline-editLabel">Editing: <%= discipline.title %> </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating mt-1">
+          <input type="text" class="form-control" id="title" name="title" placeholder="title"
+            value="<%= discipline.title %>" required>
+          <label class="form-label" for="title">Title</label>
+        </div>
+        <div class="form-floating mt-1">
+          <input type="text" class="form-control" id="teacher" name="teacher" placeholder="teacher"
+            value="<%= discipline.teacher %>" required>
+          <label class="form-label" for="teacher">Teacher</label>
+        </div>
+        <div class="form-floating mt-1">
+          <input type="number" class="form-control" id="workloadTotal" name="workloadTotal" placeholder="workloadTotal"
+            value="<%= discipline.workloadTotal %>" required>
+          <label class="form-label" for="workloadTotal">Workload</label>
+        </div>
+        <div class="form-floating mt-1">
+          <input type="number" class="form-control" id="credits" name="credits" placeholder="credits"
+            value="<%= discipline.credits %>" required>
+          <label class="form-label" for="credits">Credits</label>
+        </div>
+        <div class="form-floating mt-1">
+          <select class="form-select" aria-label="Default select example" id="status" name="status"
+            value="<%= discipline.status %>" required>
+            <option value="Studying" selected>Studying</option>
+            <option value="Finished">Finished</option>
+            <option value="Closed">Closed</option>
+            <option value="Waiting">Waiting</option>
+          </select>
+          <label class="form-label" for="status">Status</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i>
+          Cancel</button>
+        <button type="submit" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Discipline delete -->
+<div class="modal fade" id="modal-discipline-delete" tabindex="-1" role="dialog"
+  aria-labelledby="modal-discipline-delete-label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-discipline-delete-label">Discipline: <%= discipline.title %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this discipline?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i>
+          Cancel</button>
+        <a href="/discipline/<%= discipline.id %>/delete" type="button" class="btn btn-success"> <i
+            class="fas fa-check-circle"></i> Save changes</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const inputs = document.querySelectorAll('input');
+
+  inputs.forEach(input => {
+    if (input.type === 'datetime-local') input.value = new Date().toISOString().slice(0, 16);
+    if (input.type === 'time') input.value = new Date().toISOString().slice(11, 16);
+    if (input.type === 'date') input.value = new Date().toISOString().slice(0, 10);
+  });
+
+  function newCommentAdd(id){
+    const father = document.getElementById(id);
+    const quantity = father.querySelectorAll('div[class="row"]').length + 1;
+    
+    const div = document.createElement('div');
+    div.className = 'row';
+    div.id = id + "-comments-" + quantity;
+    div.innerHTML = `
+    <div class="col-10">
+      <div class="form-floating mt-1">
+        <input type="text" class="form-control" id="comment-${quantity}" name="comments[comment-${quantity}]" placeholder="comment" value="" required>
+        <label class="form-label" for="comment-${quantity}">Comment ${quantity}</label>
+      </div>
+    </div>
+    <div class="col-2 d-flex flex-column align-content-center justify-content-center">
+      <button type="button" class="btn btn-danger" onclick="newCommentRemove('${id}-comments-${quantity}')"> <i class="fas fa-times-circle"></i></button>
+    </div>
+    `;
+
+    father.appendChild(div);
+  }
+
+  function newQuestionAdd(id){
+    const father = document.getElementById(id);
+    const quantity = father.querySelectorAll('div[class="row mt-3 mb-3"]').length + 1;
+    
+    const div = document.createElement('div');
+    div.className = 'row mt-3 mb-3';
+    div.id = id + "-questions-" + quantity;
+    div.innerHTML = `
+    <div class="col-11">
+      <div class="form-floating mt-1">
+        <input type="text" class="form-control" id="question-${quantity}-title" name="questions[question-${quantity}][title]" placeholder="question" value="" required>
+        <label class="form-label" for="question-${quantity}-title">Question ${quantity}</label>
+      </div>
+      <div class="form-floating mt-1">
+        <input type="text" class="form-control" id="question-${quantity}-response" name="questions[question-${quantity}][content]" placeholder="question" value="" required>
+        <label class="form-label" for="question-${quantity}-response">Response</label>
+      </div>
+      <div class="form-group mt-2 ml-1">
+        <label class="form-label">
+          This Question is correct?
+          <input type="checkbox" class="form-check-input" id="question-${quantity}-answer" name="questions[question-${quantity}][correct]" checked>
+        </label>
+      </div>
+    </div>
+    <div class="col-1 d-flex flex-column align-content-center justify-content-center">
+      <button type="button" class="btn btn-danger" onclick="newCommentRemove('${id}-questions-${quantity}')"> <i class="fas fa-times-circle"></i></button>
+    </div>
+    `;
+
+    father.appendChild(div);
+  }
+
+    
+  function newCommentRemove(id){
+    document.getElementById(id).remove();
+  }
+
+  function newQuestionWithValueAdd(id){
+    const father = document.getElementById(id);
+    const quantity = father.querySelectorAll('div[class="row mt-3 mb-3"]').length + 1;
+    
+    const div = document.createElement('div');
+    div.className = 'row mt-3 mb-3';
+    div.id = id + "-questions-" + quantity;
+    div.innerHTML = `
+    <div class="col-11">
+      <div class="form-floating mt-1">
+        <input type="text" class="form-control" id="question-${quantity}-title" name="questions[question-${quantity}][title]" placeholder="question" value="" required>
+        <label class="form-label" for="question-${quantity}-title">Question ${quantity}</label>
+      </div>
+      <div class="form-floating mt-1">
+        <input type="text" class="form-control" id="question-${quantity}-response" name="questions[question-${quantity}][content]" placeholder="question" value="" required>
+        <label class="form-label" for="question-${quantity}-response">Response</label>
+      </div>
+      <div class="form-floating mt-1">
+        <input class="form-control" oninput="noteTotalCheck(this.value, this.id)" id="question-${quantity}-value"  type="number" step="0.5" max="10" min="0" name="questions[question-${quantity}][value]">
+        <label class="form-label" for="question-${quantity}-value">Value</label>
+      </div>
+    </div>
+    <div class="col-1 d-flex flex-column align-content-center justify-content-center">
+      <button type="button" class="btn btn-danger" onclick="newCommentRemove('${id}-questions-${quantity}')"> <i class="fas fa-times-circle"></i></button>
+    </div>
+    `;
+
+    father.appendChild(div);
+  }
+
+  function newQuestionWithValueAdd2(id){
+    const father = document.getElementById(id);
+    const quantity = father.querySelectorAll('div[class="row mt-3 mb-3"]').length + 1;
+    
+    const div = document.createElement('div');
+    div.className = 'row mt-3 mb-3';
+    div.id = id + "-questions-" + quantity;
+    div.innerHTML = `
+    <div class="col-11">
+      <div class="form-floating mt-1">
+        <input type="text" class="form-control" id="question-${quantity}-title" name="questions[question-${quantity}][title]" placeholder="question" value="" required>
+        <label class="form-label" for="question-${quantity}-title">Question ${quantity}</label>
+      </div>
+      <div class="form-floating mt-1">
+        <input type="text" class="form-control" id="question-${quantity}-response" name="questions[question-${quantity}][content]" placeholder="question" value="" required>
+        <label class="form-label" for="question-${quantity}-response">Response</label>
+      </div>
+      <div class="form-floating mt-1">
+        <input class="form-control" oninput="noteTotalCheck2(this.value, this.id)" id="question-${quantity}-value"  type="number" step="0.5" max="10" min="0" name="questions[question-${quantity}][value]">
+        <label class="form-label" for="question-${quantity}-value">Value</label>
+      </div>
+    </div>
+    <div class="col-1 d-flex flex-column align-content-center justify-content-center">
+      <button type="button" class="btn btn-danger" onclick="newCommentRemove('${id}-questions-${quantity}')"> <i class="fas fa-times-circle"></i></button>
+    </div>
+    `;
+
+    father.appendChild(div);
+  }
+
+  let questionsNotes = {};
+  function noteTotalCheck(value, id, fat){
+    questionsNotes[id] = Number(value);
+
+    let total = 0;
+    for(let key in questionsNotes){
+      total += questionsNotes[key];
+    }
+
+    const note = document.getElementById('noteTotal-new-test');
+    
+    console.log(note);
+
+    note.value = total;
+  }
+
+  let questionsNotes2 = {};
+  function noteTotalCheck2(value, id, fat){
+    questionsNotes2[id] = Number(value);
+
+    let total = 0;
+    for(let key in questionsNotes2){
+      total += questionsNotes2[key];
+    }
+
+    const note = document.getElementById('noteTotal-new-work');
+    
+    console.log(note);
+
+    note.value = total;
+  }
+
+  newQuestionAdd('new-activity-questions');
+  newCommentAdd('new-activity-comments');
+</script>

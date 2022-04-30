@@ -1,0 +1,392 @@
+<h4>
+  Works
+  <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modal-classes-work">
+    <i class="fas fa-plus-circle"></i> Register new Work
+  </button>
+</h4>
+<table class="table table-sm table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Title</th>
+      <th scope="col" style="width: 12%;">Status of Correction</th>
+      <th scope="col">Note</th>
+      <th scope="col">Link</th>
+      <th scope="col">Date</th>
+      <th scope="col"><i class="fas fa-cog"></i></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for (let Work of discipline.workers ) { %>
+    <tr>
+      <td><%= Work.title %></td>
+      <td>
+        <span class="badge rounded-pill <%= Work.statusOfCorrection === 'Concluded' ? 'bg-success': 'bg-warning' %>">
+          <i class="fas fa-<%= Work.statusOfCorrection === 'Concluded' ? 'check': 'exclamation' %>"></i>
+          <%= Work.statusOfCorrection %>
+        </span>
+      </td>
+      <td>
+        <% if (Work.statusOfCorrection === 'Waiting'){ %>
+          <span class="badge rounded-pill bg-warning">
+            <i class="fas fa-exclamation"></i>
+            <%= Work.noteObtained %>/<%= Work.noteTotal %>
+          </span>
+        <% } else { %>
+          <span class="badge rounded-pill <%= Number(Work.noteObtained) <= 6.9 ? 'bg-danger' : Number(Work.noteObtained) >= 7 && Number(Work.noteObtained) <= 8.5 ? 'bg-primary' : 'bg-success' %>">
+            <i class="fas fa-<%= Number(Work.noteObtained) <= 6.9 ? 'times' : 'check-double' %>"></i>
+            <%= Work.noteObtained %>/<%= Work.noteTotal %>
+          </span>
+        <% } %>
+      </td>
+      <td><i class="fas fa-link"></i> <a href="<%= Work.link %>"><%= Work.link %></a> </td>
+      <td>
+        <%= new Date(Work.date).toLocaleDateString("en-us", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-work-<%= Work.id %>">
+          <i class="fas fa-pen"></i>
+        </button>
+        <div class="modal fade" id="modal-work-<%= Work.id %>" tabindex="-1" role="dialog"
+          aria-labelledby="modal-work-<%= Work.id %>-label" aria-hidden="true">
+          <div class="modal-dialog modal-xl" role="document">
+            <form class="modal-content" action="/discipline/work/<%= Work.id %>/edit"
+              method="post">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-work-<%= Work.id %>-label">Editing: <%= Work.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="title" name="title" placeholder="title" value="<%= Work.title %>" required>
+                  <label class="form-label" for="title">Title</label>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="number" class="form-control" id="noteTotal-edit-work" name="noteTotal" placeholder="noteTotal" value="<%= Work.noteTotal %>" readonly required>
+                      <label class="form-label" for="noteTotal">Note Total</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="number" class="form-control" id="noteObtained" name="noteObtained" placeholder="noteObtained" value="<%= Work.noteObtained %>" readonly required>
+                      <label class="form-label" for="noteObtained">Note Obtained</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="date" class="form-control" id="date" name="date" placeholder="date" value="<%= Work.date %>" required>
+                      <label class="form-label" for="date">Date</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="text" class="form-control" id="link" name="link" placeholder="link" value="<%= Work.link %>">
+                      <label class="form-label" for="link">Link</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group mt-3">
+                  <hr>
+                  <h5> Questions</h5>
+                  <div id="edit-work-questions-<%= Work.id %>" class="mt-2 mb-2">
+                    <% for (let question of Work.questions) { %>
+                    <div class="row mt-3 mb-3" id="questions-edit-<%= Work.id %>">
+                      <div class="col-11">
+                        <div class="form-floating mt-1">
+                          <input type="text" class="form-control"
+                            id="question-<%= Work.questions.indexOf(question) + 1 %>-title"
+                            name="questions[question-<%= Work.questions.indexOf(question) + 1 %>][title]"
+                            placeholder="question" value="<%= question.title %>" required>
+                          <label class="form-label"
+                            for="question-<%= Work.questions.indexOf(question) + 1 %>-title">Question
+                            <%= Work.questions.indexOf(question) + 1 %></label>
+                        </div>
+                        <div class="form-floating mt-1">
+                          <input type="text" class="form-control"
+                            id="question-<%= Work.questions.indexOf(question) + 1 %>-response"
+                            name="questions[question-<%= Work.questions.indexOf(question) + 1 %>][content]"
+                            placeholder="question" value="<%= question.content %>" required>
+                          <label class="form-label"
+                            for="question-<%= Work.questions.indexOf(question) + 1 %>-response">Response</label>
+                        </div>
+                        <div class="form-floating mt-1">
+                          <input type="text" class="form-control"
+                            id="question-<%= Work.questions.indexOf(question) + 1 %>-value"
+                            name="questions[question-<%= Work.questions.indexOf(question) + 1 %>][value]"
+                            placeholder="question" value="<%= question.value %>" required>
+                          <label class="form-label"
+                            for="question-<%= Work.questions.indexOf(question) + 1 %>-value">Value</label>
+                        </div>
+                      </div>
+                      <div class="col-1 d-flex flex-column align-content-center justify-content-center">
+                        <button type="button" class="btn btn-danger"
+                          onclick="newCommentRemove('questions-edit-<%= Work.id %>')"> <i
+                            class="fas fa-times-circle"></i></button>
+                      </div>
+                    </div>
+                    <% } %>
+                  </div>
+                  <div class="row justify-content-center">
+                    <button type="button" onclick="newQuestionWithValueAdd('edit-work-questions-<%= Work.id %>', 'noteTotal-edit-work')"
+                      class="btn btn-primary w-50"><i class="fas fa-plus-circle"></i> Add new Question</button>
+                  </div>
+                </div>
+                <div class="form-group mt-3">
+                  <hr>
+                  <h5> Comments</h5>
+                  <div id="edit-work-comments-<%= Work.id %>" class="mt-2 mb-2">
+                    <% for (let comment of Work.comments) { %>
+                    <div class="form-floating mt-1">
+                      <input type="text" class="form-control" id="comment" name="comment" readonly placeholder="comment"
+                        value="<%= comment.content %>" required>
+                      <label class="form-label" for="comment">Comment
+                        <%=  Work.comments.indexOf(comment) + 1 %></label>
+                    </div>
+                    <% } %>
+                  </div>
+                  <div class="row justify-content-center">
+                    <button type="button" onclick="newCommentAdd('edit-work-comments-<%= Work.id %>')"
+                      class="btn btn-secondary w-50"><i class="fas fa-plus-circle"></i> Add new comment</button>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Cancel</button>
+                <button type="submit" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal-work-<%= Work.id %>-delete">
+          <i class="fas fa-trash"></i>
+        </button>
+        <div class="modal fade" id="modal-work-<%= Work.id %>-delete" tabindex="-1" role="dialog" aria-labelledby="modal-work-<%= Work.id %>-delete-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-work-<%= Work.id %>-delete-label">Work: <%= Work.title %>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete this work?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Cancel</button>
+                <a href="/discipline/work/<%= Work.id %>/delete" type="button" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-work-<%= Work.id %>-questions">
+          <i class="fas fa-list-check"></i>
+        </button>
+        <div class="modal fade" id="modal-work-<%= Work.id %>-questions" tabindex="-1" role="dialog" aria-labelledby="modal-work-<%= Work.id %>-questions-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-work-<%= Work.id %>-questions-label">Work:
+                  <%= Work.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                <% for (let question of Work.questions) { %>
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="question" name="question" readonly placeholder="question" value="<%= question.content %>" required>
+                  <label class="form-label" for="question"><%= question.title %></label>
+                  <% if (Work.statusOfCorrection === 'Waiting'){ %>
+                  <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
+                    <i class="fas fa-exclamation"></i>
+                  </span>
+                  <% } else { %>
+                  <span
+                    class="position-absolute top-0 start-0 translate-middle badge rounded-pill <%= question.correct ? 'bg-success' : 'bg-danger' %>">
+                    <%= question.noteObtained %>
+                  </span>
+                  <span
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill <%= question.correct ? 'bg-success' : 'bg-danger' %> ">
+                    <i class="fas fa-<%= question.correct ? 'check-double' : 'times' %>"></i>
+                  </span>
+                  <% } %>
+                </div>
+                <% } %>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-work-<%= Work.id %>-comments">
+          <i class="fas fa-comments"></i>
+        </button>
+        <div class="modal fade" id="modal-work-<%= Work.id %>-comments" tabindex="-1" role="dialog" aria-labelledby="modal-work-<%= Work.id %>-comments-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-work-<%= Work.id %>-comments-label">Work:
+                  <%= Work.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                <% if (Work.comments.length === 0){ %>
+                <p class="text-center alert alert-secondary"> <i class="fas fa-info-circle"></i> No comments</p>
+                <% } %>
+                <% for (let comment of Work.comments) { %>
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="comment" name="comment" readonly placeholder="comment"
+                    value="<%= comment.content %>" required>
+                  <label class="form-label" for="comment">Comment <%=  Work.comments.indexOf(comment) + 1 %></label>
+                </div>
+                <% } %>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#modal-work-<%= Work.id %>-concluded">
+          <i class="fas fa-check-double"></i>
+        </button>
+        <div class="modal fade" id="modal-work-<%= Work.id %>-concluded" tabindex="-1" role="dialog" aria-labelledby="modal-work-<%= Work.id %>-concluded-label" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <form class="modal-content" action="/discipline/work/<%= Work.id %>/correction" method="post">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-work-<%= Work.id %>-concluded-label">Work:
+                  <%= Work.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+              </div>
+              <div class="modal-body">
+                <% if (Work.questions.length === 0){ %>
+                <p class="text-center alert alert-secondary"> <i class="fas fa-info-circle"></i> No questions</p>
+                <% } %>
+                <% for (let question of Work.questions) { %>
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="question-name" readonly placeholder="question"
+                    value="<%= question.content %>">
+                  <label class="form-label" for="question-name">Question <%= Work.questions.indexOf(question) + 1 %></label>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="text" class="form-control" id="question-value" readonly placeholder="question" value="<%= question.value %>">
+                      <label class="form-label" for="question">Value total</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input min="0" max="<%= question.value %>" step="0.5" type="number" class="form-control" <%= question.correct ? '' : 'readonly' %> id="question-value-obtained-<%= question.id %>" placeholder="question" value="<%= question.noteObtained %>" name="questions[question-<%= Work.questions.indexOf(question) + 1 %>][valueObtained]" required>
+                      <label class="form-label" for="question">Value obtained </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group mt-2 ml-1">
+                  <label class="form-label">
+                    This Question is correct?
+                    <input type="checkbox" onclick="correct('question-value-obtained-<%= question.id %>')" class="form-check-input" id="question-<%= Work.questions.indexOf(question) + 1 %>-answer" name="questions[question-<%= Work.questions.indexOf(question) + 1 %>][correct]" <%= question.correct ? 'checked' : '' %>>
+                  </label>
+                </div>
+                <% } %>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Close</button>
+                <button type="submit" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>
+
+<!-- Work -->
+<div class="modal fade" id="modal-classes-work" tabindex="-1" aria-labelledby="modal-classes-workLabel"
+  aria-hidden="true">
+  <form class="modal-dialog modal-xl" action="/discipline/work/register" method="post">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-classes-workLabel">Register a new Work</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating mt-1">
+          <input type="text" class="form-control" id="title" name="title" placeholder="title" value="" required>
+          <label class="form-label" for="title">Title</label>
+        </div>
+         <div class="row">
+           <div class="col">
+             <div class="form-floating mt-1">
+               <input type="text" class="form-control" id="link" name="link" placeholder="link" value="/">
+               <label class="form-label" for="link">Link</label>
+             </div>
+           </div>
+           <div class="col">
+             <div class="form-floating mt-1">
+               <input type="date" class="form-control" id="date" name="date" placeholder="date" value="new Date()" required>
+               <label class="form-label" for="date">Date</label>
+             </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="form-floating mt-1">
+              <input type="number" class="form-control" id="noteTotal-new-work" name="noteTotal" placeholder="noteTotal" step="0.5" max="10" min="0" value="0" readonly required>
+              <label class="form-label" for="noteTotal">Note Total</label>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-floating mt-1">
+              <input type="number" class="form-control" id="noteObtained" name="noteObtained" placeholder="noteObtained" step="0.5" max="10" min="0" value="0" readonly required>
+              <label class="form-label" for="noteObtained">Note Obtained</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group mt-3">
+          <hr>
+          <h5> Questions</h5>
+          <div id="new-work-questions" class="mt-2 mb-2"></div>
+          <div class="row justify-content-center">
+            <button id="newQuestionWithValueAddBtn" type="button" onclick="newQuestionWithValueAdd2('new-work-questions')" class="btn btn-primary w-50"><i class="fas fa-plus-circle"></i> Add new Question</button>
+          </div>
+        </div>
+        <div class="form-group mt-3">
+          <hr>
+          <h5> Comments</h5>
+          <div id="new-work-comments" class="mt-2 mb-2"></div>
+          <div class="row justify-content-center">
+            <button type="button" onclick="newCommentAdd('new-work-comments')" class="btn btn-secondary w-50"><i class="fas fa-plus-circle"></i> Add new comment</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i>
+          Cancel</button>
+        <button type="submit" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<script>
+  function correct(id) {
+    let value = document.getElementById(id);
+    value.readOnly = !value.readOnly;
+
+    if (value.readOnly === false) {
+      value.value = 1;
+      value.setAttribute('min', 1);
+      value.focus();
+    } else {
+      value.value = 0;
+      value.setAttribute('min', 0);
+    }
+  }
+</script>

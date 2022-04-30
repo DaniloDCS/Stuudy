@@ -1,0 +1,398 @@
+<% if (course.periods.length === 0) { %>
+<div class="alert alert-info">
+  <i class="fas fa-exclamation-triangle"></i>
+    <strong>No periods found</strong> for this course. Please add some.
+</div>
+<% } %>
+
+<% for (let period of course.periods) { %>
+<div class="accordion-item">
+  <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+      data-bs-target="#p<%= period.id %>" aria-expanded="false" aria-controls="p<%= period.id %>">
+      <h5>
+        <%= period.title %>
+        <% if (period.status === 'Studying') { %>
+        <span class="badge rounded-pill bg-primary">
+          <i class="fas fa-hourglass"></i>
+          <%= period.status %>
+        </span>
+        <span class="badge rounded-pill bg-secondary">
+          <i class="fas fa-business-time"></i>
+          <%= period.workloadProgress %> %
+        </span>
+        <% } else if (period.status === 'Finished') { %>
+        <span class="badge rounded-pill bg-success">
+          <i class="fas fa-check-circle"></i>
+          <%= period.status %>
+        </span>
+        <span class="badge rounded-pill bg-dark">
+          <i class="fas fa-medal"></i>
+          <%= period.CRA.toFixed(1) %>
+        </span>
+        <span class="badge rounded-pill bg-secondary">
+          <i class="fas fa-business-time"></i>
+          <%= period.workloadProgress %> %
+        </span>
+        <% } else if (period.status === 'Closed') { %>
+        <span class="badge rounded-pill bg-danger">
+          <i class="fas fa-times-circle"></i>
+          <%= period.status %>
+        </span>
+        <% } else if (period.status === 'Waiting') { %>
+        <span class="badge rounded-pill bg-warning">
+          <i class="fas fa-user-clock"></i>
+          <%= period.status %>
+        </span>
+        <% } %>
+      </h5>
+    </button>
+  </h2>
+  <div id="p<%= period.id %>" class="accordion-collapse collapse <%= period.status === 'Studying' ? 'show' : '' %>"
+    aria-labelledby="panelsStayOpen-headingTwo">
+    <div class="accordion-body">
+      <div class="row">
+        <div class="col">
+          <h5>
+            <p><i class="fas fa-calendar-alt"></i> From <%= new Date(period.startedIn).toLocaleDateString("en-us", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+            <p><i class="fas fa-calendar-alt"></i> To <%= new Date(period.finishedIn).toLocaleDateString("en-us", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+            <div data-days="<%= period.startedIn %>|<%= period.finishedIn %>"></div>
+            <p><i class="fas fa-business-time"></i> CH Total: <%= period.workloadCompleted %> / <%= period.workloadTotal %></p>
+            <p>Credits: <%= period.creditsTotal %></p>
+          </h5>
+        </div>
+      </div>
+      <div class="progress mt-3 mb-3">
+        <div class="progress-bar bg-success" role="progressbar" style="width: <%= period.workloadProgress %>%;"
+          aria-valuenow="<%= period.workloadProgress %>" aria-valuemin="0" aria-valuemax="100">
+          <%= period.workloadProgress %>%</div>
+      </div>
+      <div class="row mt-2 p-3">
+        <h4 class="mt-3 mb-3">Disciplines</h4>
+        <table class="table table-secondary">
+          <thead>
+            <tr>
+              <th scope="col">Title</th>
+              <th scope="col">Teacher</th>
+              <th style="width: 6%" scope="col">Media</th>
+              <th style="width: 12%" scope="col">Status/Progress</th>
+              <th scope="col">Workload</th>
+              <th style="width: 6%" scope="col">Credits</th>
+              <th scope="col">Classes</th>
+              <th scope="col">Activities</th>
+              <th scope="col">Workers</th>
+              <th style="width: 6%" scope="col"><i class="fas fa-cog"></i></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (period.disciplines.length > 0){ %>
+            <% for (let discipline of period.disciplines) { %>
+            <tr>
+              <td><%= discipline.title %></td>
+              <td><%= discipline.teacher %></td>
+              <td>
+                <span
+                  class="badge rounded-pill bg-<%= Number(discipline.media) <= 6.9 ? 'danger': Number(discipline.media) >= 7 && Number(discipline.media) <= 8.5 ? 'primary' : 'success' %>">
+                  <i class="fas fa-award"></i>
+                  <%= discipline.media %>
+                </span>
+              </td>
+              <td>
+                <% if (discipline.status === 'Studying') { %>
+                <span class="badge rounded-pill bg-primary">
+                  <i class="fas fa-hourglass"></i>
+                  <%= discipline.status %>
+                </span>
+                <span class="badge rounded-pill bg-secondary">
+                  <i class="fas fa-business-time"></i>
+                  <%= discipline.workloadProgress %> %
+                </span>
+                <% } else if (discipline.status === 'Finished') { %>
+                <span class="badge rounded-pill bg-success">
+                  <i class="fas fa-check-circle"></i>
+                  <%= discipline.status %>
+                </span>
+                <span class="badge rounded-pill bg-secondary">
+                  <i class="fas fa-business-time"></i>
+                  <%= discipline.workloadProgress %> %
+                </span>
+                <% } else if (discipline.status === 'Closed') { %>
+                <span class="badge rounded-pill bg-danger">
+                  <i class="fas fa-times-circle"></i>
+                  <%= discipline.status %>
+                </span>
+                <% } else if (discipline.status === 'Waiting') { %>
+                <span class="badge rounded-pill bg-warning">
+                  <i class="fas fa-user-clock"></i>
+                  <%= discipline.status %>
+                </span>
+                <% } %>
+              </td>
+              <td><%= discipline.workloadCompleted %>/<%= discipline.workloadTotal %></td>
+              <td><%= discipline.credits %></td>
+              <td>
+                <p>Total: <span class="badge rounded-pill bg-primary"><%= discipline.classes.length %> </span></p>
+              </td>
+              <td>
+                <p>Total: <span
+                    class="badge rounded-pill bg-success"><%= discipline.activities.filter(a => a.status === 'Concluded').length %>/<%= discipline.activities.length %>
+                  </span></p>
+                <p>Pendent: <span
+                    class="badge rounded-pill bg-warning text-dark"><%= discipline.activities.filter(a => a.status === 'Pending').length %></span>
+                </p>
+              </td>
+              <td>
+                <p>Total: <span
+                    class="badge rounded-pill bg-success"><%= discipline.workers.filter(a => a.status === 'Concluded').length %>/<%= discipline.workers.length %>
+                  </span></p>
+                <p>Pendent: <span
+                    class="badge rounded-pill bg-warning text-dark"><%= discipline.workers.filter(a => a.status === 'Pendent').length %></span>
+                </p>
+              </td>
+              <td>
+                <div class="btn-group-vertical">
+                  <a class="btn btn-sm btn-primary" href="/discipline/period/<%= course.periods.indexOf(period) %>/<%= period.disciplines.indexOf(discipline) %>/">
+                    Access <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-3 mb-3">
+        <% if (period.status === 'Studying') { %>
+        <button class="btn btn-success btn-sm" type="button" data-bs-toggle="modal"
+          data-bs-target="#modal-new-discipline-<%= period.id %>"><i class="fas fa-plus-circle"></i> Register new
+          Discipline</button>
+        <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="modal"
+          data-bs-target="#modal-finish-period-<%= period.id %>"><i class="fas fa-check-circle"></i> Finish
+          Period</button>
+        <button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal"
+          data-bs-target="#modal-close-period-<%= period.id %>"><i class="fas fa-times-circle"></i> Close
+          Period</button>
+        <div class="modal fade" id="modal-new-discipline-<%= period.id %>" tabindex="-1"
+          aria-labelledby="modal-new-discipline-<%= period.id %>Label" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <form class="modal-content" action="/period/<%= period.id %>/discipline/create" method="post">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-new-discipline-<%= period.id %>Label">Register a new discipline in
+                  <%= period.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="title" name="title" placeholder="title" value="" required>
+                  <label class="form-label" for="title">Title</label>
+                </div>
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="teacher" name="teacher" placeholder="teacher" value=""
+                    required>
+                  <label class="form-label" for="teacher">Teacher</label>
+                </div>
+                <div class="form-floating mt-1">
+                  <input type="number" class="form-control" id="workloadTotal" name="workloadTotal"
+                    placeholder="workloadTotal" value="" required>
+                  <label class="form-label" for="workloadTotal">Workload</label>
+                </div>
+                <div class="form-floating mt-1">
+                  <input type="number" class="form-control" id="credits" name="credits" placeholder="credits" value="0"
+                    required>
+                  <label class="form-label" for="credits">Credits</label>
+                </div>
+                <div class="form-floating mt-1">
+                  <select class="form-select" aria-label="Default select example" id="status" name="status" required>
+                    <option value="Studying" selected>Studying</option>
+                    <option value="Finished">Finished</option>
+                    <option value="Closed">Closed</option>
+                    <option value="Waiting">Waiting</option>
+                  </select>
+                  <label class="form-label" for="status">Status</label>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i
+                    class="fas fa-times-circle"></i> Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle"></i> Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="modal fade" id="modal-finish-period-<%= period.id %>" tabindex="-1"
+          aria-labelledby="modal-finish-period-<%= period.id %>Label" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-finish-period-<%= period.id %>Label">Finish - <%= period.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to finish this period?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i
+                    class="fas fa-times-circle"></i> Cancel</button>
+                <a href="/period/<%= period.id %>/finish" type="button" class="btn btn-success"> <i
+                    class="fas fa-check-circle"></i> Save changes</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="modal-close-period-<%= period.id %>" tabindex="-1"
+          aria-labelledby="modal-close-period-<%= period.id %>Label" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-close-period-<%= period.id %>Label">Close - <%= period.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to close this period?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i
+                    class="fas fa-times-circle"></i> Cancel</button>
+                <a href="/period/<%= period.id %>/close" type="button" class="btn btn-success"> <i
+                    class="fas fa-check-circle"></i> Save changes</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="modal-edit-period-<%= period.id %>" tabindex="-1"
+          aria-labelledby="modal-edit-period-<%= period.id %>Label" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <form class="modal-content" action="/period/<%= period.id %>/edit" method="post">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-edit-period-<%= period.id %>Label">Edit - <%= period.title %> </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-floating mt-1">
+                  <input type="text" class="form-control" id="title" name="title" placeholder="title" required
+                    value="<%= period.title %>">
+                  <label class="form-label" for="title">Title</label>
+                </div>
+                <div class="form-floating mt-1">
+                  <select class="form-select" aria-label="Default select example" id="status" name="status"
+                    value="<%= period.status %>" required>
+                    <option value="Studying">Studying</option>
+                    <option value="Finished">Finished</option>
+                    <option value="Closed">Closed</option>
+                    <option value="Waiting">Waiting</option>
+                  </select>
+                  <label class="form-label" for="status">Status</label>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="date" class="form-control" id="startedIn" name="startedIn" placeholder="startedIn"
+                        value="<%= period.startedIn %>">
+                      <label class="form-label" for="startedIn">Started In</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-floating mt-1">
+                      <input type="date" class="form-control" id="finishedIn" name="finishedIn" placeholder="finishedIn"
+                        value="<%= period.finishedIn %>">
+                      <label class="form-label" for="finishedIn">Finishe dIn</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-floating mt-1">
+                  <input type="number" class="form-control" id="workloadTotal" name="workloadTotal"
+                    placeholder="workloadTotal" value="<%= period.workloadTotal %>" required readonly>
+                  <label class="form-label" for="workloadTotal">Workload</label>
+                </div>
+                <div class="form-floating mt-1">
+                  <input type="number" class="form-control" id="CRA" name="CRA" placeholder="CRA"
+                    value="<%= period.CRA %>" readonly required>
+                  <label class="form-label" for="CRA">CRA</label>
+                </div>
+                <div class="form-floating mt-1">
+                  <input type="number" class="form-control" id="creditsTotal" name="creditsTotal"
+                    placeholder="creditsTotal" value="<%= period.creditsTotal %>" readonly>
+                  <label class="form-label" for="creditsTotal">Credits</label>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i
+                    class="fas fa-times-circle"></i> Cancel</button>
+                <button type="submit" class="btn btn-primary"> <i class="fas fa-check-circle"></i> Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <% } else if (period.status === 'Finished' || period.status === 'Waiting') { %>
+        <button
+          class="btn <% if (period.status === 'Finished') { %> btn-warning <% } else { %> btn-success  <% } %> btn-sm"
+          type="button" data-bs-toggle="modal" data-bs-target="#modal-reopen-period-<%= period.id %>"><i
+            class="fas fa-refresh"></i> <% if (period.status === 'Finished') { %> Reopen <% } else { %> Start <% } %>
+          this period</button>
+        <div class="modal fade" id="modal-reopen-period-<%= period.id %>" tabindex="-1"
+          aria-labelledby="modal-reopen-period-<%= period.id %>Label" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-reopen-period-<%= period.id %>Label">
+                  <% if (period.status === 'Finished') { %> Reopen <% } else { %> Start <% } %> - <%= period.title %>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to <% if (period.status === 'Finished') { %> Reopen <% } else { %> Start <% } %>
+                this period?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i
+                    class="fas fa-times-circle"></i> Cancel</button>
+                <a href="/period/<%= period.id %>/<% if (period.status === 'Finished') { %>reopen<% } else { %>start<% } %>"
+                  type="button" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
+          data-bs-target="#modal-edit-period-<%= period.id %>"><i class="fas fa-pen"></i> Edit Period</button>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<script>
+  function daysBetween() {
+    let days = document.querySelectorAll('[data-days]');
+
+    for (var i = 0; i < days.length; i++) {
+      let element = days[i];
+      let group = element.getAttribute('data-days').split('|');
+      let startDate = new Date(group[0]);
+      let endDate = new Date(group[1]);
+      let millisecondsPerDay = 1000 * 60 * 60 * 24;
+      let millisBetween = endDate.getTime() - startDate.getTime();
+      let d = millisBetween / millisecondsPerDay;
+
+      let endDate2 = new Date();
+      let millisBetween2 = new Date().getTime() - startDate.getTime();
+      let d2 = millisBetween2 / millisecondsPerDay;
+
+      d2 >= 0 ? d2 = d2 : d2 = 0
+
+      let percent = ((d2*100)/d).toFixed(2);
+
+      element.innerHTML = `
+        <p><i class='fas fa-clock'></i> ${d.toFixed(0)} ${d > 1 ? 'days' : 'day'}</p>
+        <p><i class='fas fa-calendar-check'></i> ${d2.toFixed(0)} ${d2 >= 0 ? 'days ' : 'day '} concluded</p>
+        <p>
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100" style="width: ${percent}%">${percent}%</div>
+          </div>
+        </p>
+      `;
+    }
+  }
+
+  daysBetween();
+</script>

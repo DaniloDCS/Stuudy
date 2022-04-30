@@ -1,0 +1,179 @@
+<div class="row p-3">
+  <div class="col mt-2">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-register-course">
+      <i class="fas fa-plus-circle"></i> Register a new course
+    </button>
+    <div class="modal fade" id="modal-register-course" tabindex="-1" aria-labelledby="modal-register-courseLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <form class="modal-content" action="/course/register" method="post">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-register-courseLabel">Register a new course</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-floating mt-1">
+              <input type="text" class="form-control" id="name" name="name" placeholder="name" value="" required>
+              <label class="form-label" for="name">Name</label>
+            </div>
+            <div class="form-floating mt-1">
+              <input type="text" class="form-control" id="grade" name="grade" placeholder="grade" value="Graduation" required>
+              <label class="form-label" for="grade">Grade</label>
+            </div>
+            <div class="form-floating mt-1">
+              <input type="text" class="form-control" id="qualification" name="qualification" placeholder="qualification" value="Bachelor" required>
+              <label class="form-label" for="qualification">Qualification</label>
+            </div>
+            <div class="form-floating mt-1">
+              <input type="text" class="form-control" id="address" name="address" placeholder="address" value="" >
+              <label class="form-label" for="address">Address</label>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="form-floating mt-1">
+                  <input type="date" class="form-control" id="startedIn" name="startedIn" placeholder="startedIn" value="new Date()" required>
+                  <label class="form-label" for="startedIn">Started In</label>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-floating mt-1">
+                  <input type="date" class="form-control" id="finishedIn" name="finishedIn" placeholder="finishedIn" value="new Date()" >
+                  <label class="form-label" for="finishedIn">Finished In</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-floating mt-1">
+              <select class="form-select" aria-label="Default select example" id="status" name="status" required>
+                <option value="Studying" selected>Studying</option>
+                <option value="Finished">Finished</option>
+                <option value="Closed">Closed</option>
+                <option value="Waiting">Waiting</option>
+              </select>
+              <label class="form-label" for="status">Status</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> <i class="fas fa-times-circle"></i> Cancel</button>
+            <button type="submit" class="btn btn-success"> <i class="fas fa-check-circle"></i> Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <% if (courses.length === 0) { %>
+    <div class="alert alert-info mt-2">
+      <i class="fas fa-info-circle"></i> You don't have any courses yet. Register one now.
+    </div>
+    <% } %>
+
+    <div class="row">
+      <% for (let course of courses){ %>
+        <div class="col-md-4 mt-2">
+          <div class="card">
+            <div class="card-body">
+              <% if (course.status === 'Studying') { %>
+              <span class="badge rounded-pill bg-primary">
+                <i class="fas fa-hourglass"></i>
+                <%= course.status %>
+              </span>
+              <span class="badge rounded-pill bg-secondary">
+                <i class="fas fa-business-time"></i>
+                <%= Number(course.workloadProgress).toFixed(2) %>%
+              </span>
+              <% } else if (course.status === 'Finished') { %>
+              <span class="badge rounded-pill bg-success">
+                <i class="fas fa-check-circle"></i>
+                <%= course.status %>
+              </span>
+              <span class="badge rounded-pill bg-dark">
+                <i class="fas fa-medal"></i>
+                <%= course.CRA %>
+              </span>
+              <span class="badge rounded-pill bg-secondary">
+                <i class="fas fa-business-time"></i>
+                <%= course.workloadCompleted %> %
+              </span>
+              <% } else if (course.status === 'Closed') { %>
+              <span class="badge rounded-pill bg-danger">
+                <i class="fas fa-times-circle"></i>
+                <%= course.status %>
+              </span>
+              <% } else if (course.status === 'Waiting') { %>
+              <span class="badge rounded-pill bg-warning">
+                <i class="fas fa-user-clock"></i>
+                <%= course.status %>
+              </span>
+              <% } %>
+              <h5 class="card-title mt-1"> <i class="fas fa-tag"></i> <%= course.name %></h5>
+              <h6 class="card-subtitle"> <i class="fas fa-award"></i> <%= course.grade %> - <%= course.qualification %> </h6>
+              <h6 class="card-subtitle mt-1"> <i class="fas fa-calendar-alt"></i> 
+                <%= new Date(course.startedIn).toLocaleDateString("en-us", { year: 'numeric', month: 'long', day: 'numeric' }) %> 
+                -
+                <%= new Date(course.finishedIn).toLocaleDateString("en-us", { year: 'numeric', month: 'long', day: 'numeric' }) %> 
+              </h6>
+              <h6 class="card-subtitle mt-1"> <i class="fas fa-map-pin"></i> <%= course.address %> </h6>
+              <ol class="list-group list-group-numbered mt-4">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                    <div class="fw-bold">CRA</div>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">
+                    <i class="fas fa-medal"></i> <%= course.CRA %>
+                  </span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto w-100">
+                    <div class="fw-bold"> <i class="fas fa-clock"></i> Workload</div>
+                    <p class="m-0">Total: <span class="badge bg-primary rounded-pill"> <%= course.workloadTotal %> </span>
+                    </p>
+                    <p class="m-0">Concluded: <span class="badge bg-primary rounded-pill">
+                        <%= course.workloadCompleted %></span> </p>
+                    <div class="progress mt-3 w-100">
+                      <div class="progress-bar" role="progressbar" style="width: <%= Number(course.workloadProgress).toFixed(2) %>%;" aria-valuenow="<%= Number(course.workloadProgress).toFixed(2) %>%" aria-valuemin="0"
+                        aria-valuemax="100"><%= Number(course.workloadProgress).toFixed(2) %>%</div>
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto w-100">
+                    <div class="fw-bold"> <i class="fas fa-calendar-check"></i> Periods</div>
+                    <p class="m-0">Total: <span class="badge bg-success rounded-pill"> <%= course.periodsTotal %> </span> </p>
+                    <p class="m-0">Concluded: <span class="badge bg-success rounded-pill"> <%= course.periodsCompleted %></span> </p>
+                    <div class="progress mt-3 w-100">
+                      <div class="progress-bar" role="progressbar" style="width: <%= course.periodsProgress %>%;" aria-valuenow="<%= course.periodsProgress %>%" aria-valuemin="0" aria-valuemax="100">
+                      <%= course.periodsProgress %>%
+                    </div>
+                  </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto w-100">
+                    <div class="fw-bold"> <i class="fas fa-chalkboard-user"></i> Disciplines</div>
+                    <p class="m-0">Total: <span class="badge bg-warning rounded-pill"> <%= course.disciplinesTotal %> </span></p>
+                    <p class="m-0">Concluded: <span class="badge bg-warning rounded-pill"> <%= course.disciplinesConcluded %></span> </p>
+                    <div class="progress mt-3 w-100">
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: <%= course.disciplinesProgress %>%;" aria-valuenow="<%= course.disciplinesProgress %>%" aria-valuemin="0" aria-valuemax="100">
+                      <%= course.disciplinesProgress %>%
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ol>
+              <a href="/course/<%= courses.indexOf(course) %>" class="btn btn-primary mt-2">Go to course <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const inputs = document.querySelectorAll('input');
+
+  inputs.forEach(input => {
+    if (input.type === 'datetime-local') input.value = new Date().toISOString().slice(0, 16);
+    if (input.type === 'time') input.value = new Date().toISOString().slice(11, 16);
+    if (input.type === 'date') input.value = new Date().toISOString().slice(0, 10);
+  });
+</script>
