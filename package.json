@@ -9,7 +9,7 @@
   "scripts": {
     "test": "",
     "dev": "nodemon src/server.ts",
-    "start": "yarn build & node dist/server.js",
+    "start": "node dist/server.js",
     "build": "sucrase ./src/ -d ./dist/ --transforms typescript,imports"
   },
   "engines": {
